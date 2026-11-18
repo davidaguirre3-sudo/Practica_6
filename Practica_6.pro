@@ -8,10 +8,14 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    juego.cpp\
+    ventanaprincipal.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h\
+    juego.h\
+    ventanaprincipal.h
 
 FORMS += \
     mainwindow.ui
