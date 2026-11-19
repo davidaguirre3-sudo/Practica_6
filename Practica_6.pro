@@ -1,4 +1,5 @@
 QT += widgets
+QT += multimedia
 
 CONFIG += c++17
 
@@ -8,15 +9,37 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    juego.cpp\
+    ventanaprincipal.cpp\
+    jugador.cpp\
+    caja.cpp\
+    canon.cpp\
+    colisiones.cpp\
+    estructura.cpp\
+    obstaculo.cpp\
+    particula.cpp\
+    proyectil.cpp\
+    representante.cpp
+
 
 HEADERS += \
-    mainwindow.h
-
-FORMS += \
-    mainwindow.ui
+    juego.h\
+    ventanaprincipal.h\
+    jugador.h\
+    caja.h\
+    canon.h\
+    colisiones.h\
+    estructura.h\
+    obstaculo.h\
+    particula.h\
+    proyectil.h\
+    representante.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    recursos.qrc
+
