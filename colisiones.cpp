@@ -1,6 +1,13 @@
 #include "colisiones.h"
 #include <cmath>
 
+// =====================================================================
+// 1. CHOQUE CON PARED (perfectamente elastico, e = 1)
+//    Se invierte la velocidad PERPENDICULAR a la pared.
+//    La paralela no cambia. La rapidez se conserva -> no se pierde energia.
+//      Pared izquierda o derecha:  vx' = -vx   (vy igual)
+//      Pared de abajo o arriba:    vy' = -vy   (vx igual)
+// =====================================================================
 bool choqueConPared(Particula* p, Caja caja)
 {
     double r = p->getRadio();
@@ -35,6 +42,14 @@ bool choqueConPared(Particula* p, Caja caja)
     return choco;
 }
 
+// =====================================================================
+// 2. CHOQUE CON OBSTACULO (inelastico, coeficiente de restitucion e)
+// =====================================================================
+
+// Con que lado del obstaculo choco la particula.
+// Se mide cuanto se metio la particula por cada lado:
+// el lado por donde MENOS se metio es por donde entro.
+// (Simplificacion: la particula se toma como un cuadrado de lado 2*radio)
 short ladoDeImpacto(Particula* p, Obstaculo* o)
 {
     double r = p->getRadio();
@@ -59,6 +74,11 @@ short ladoDeImpacto(Particula* p, Obstaculo* o)
     return lado;
 }
 
+// Rebote con perdida de energia:
+//   v_perpendicular' = -e * v_perpendicular
+//   v_paralela'      =  v_paralela
+//   Lado izquierdo o derecho: la perpendicular es vx
+//   Lado de abajo o arriba:   la perpendicular es vy
 bool choqueConObstaculo(Particula* p, Obstaculo* o, double e)
 {
     short lado = ladoDeImpacto(p, o);

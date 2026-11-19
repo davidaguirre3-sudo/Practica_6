@@ -6,8 +6,10 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QTimer>
+#include <vector>
 #include "jugador.h"
 #include "proyectil.h"
+#include "estructura.h"
 #include "caja.h"
 
 // Estados del juego (controlan que puede pasar en cada momento).
@@ -25,6 +27,10 @@ private:
     Jugador* jugador2;
     Proyectil* proyectil;
     Caja caja;
+    std::vector<Estructura*> obstaculosNeutrales;  // sueltos en el mapa, no
+    // son de ningun jugador
+    // (siempre chocan/dañan,
+    // sin regla de autodano)
     short turno;   // 0 = le toca a jugador1, 1 = le toca a jugador2
     short estado;
     double e;      // coeficiente de restitucion contra obstaculos

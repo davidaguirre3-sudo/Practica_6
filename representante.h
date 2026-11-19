@@ -3,6 +3,12 @@
 
 #include <QGraphicsPixmapItem>
 
+// STAND-IN temporal (parte de Pedro). El parametro 'esJugador1' es un
+// agregado MIO solo para poder cargarle el sprite correcto (azul/rojo) en
+// esta copia de prueba -- no es parte del contrato que le pasamos a Pedro,
+// por eso tiene valor por defecto: con eso, si en algun momento mezclan
+// esto con su Representante real (que seguira el contrato original de 2
+// parametros), nada deja de compilar.
 class Representante : public QGraphicsPixmapItem {
 private:
     bool vivo;

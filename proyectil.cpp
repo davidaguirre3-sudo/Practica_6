@@ -10,8 +10,12 @@ Proyectil::Proyectil(const Particula& p) : cuerpo(p) {
     setBrush(QBrush(Qt::NoBrush));  // el circulo sigue ahi para la colision, invisible
 
     sprite = new QGraphicsPixmapItem(this);
+    const double ESCALA_VISTA = 8.0;
     QPixmap pix(":/sprites/proyectil.png");
-    sprite->setPixmap(pix.scaled((int)(2 * r), (int)(2 * r), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    pix = pix.scaled((int)(2 * r * ESCALA_VISTA), (int)(2 * r * ESCALA_VISTA),
+                     Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    sprite->setPixmap(pix);
+    sprite->setScale(1.0 / ESCALA_VISTA);
     sprite->setPos(cuerpo.getX() - r, cuerpo.getY() - r);
 }
 
@@ -19,7 +23,7 @@ void Proyectil::avanzar(double dt) {
     cuerpo.mover(dt);
     double r = cuerpo.getRadio();
     setRect(cuerpo.getX() - r, cuerpo.getY() - r, 2 * r, 2 * r);
-    sprite->setPos(cuerpo.getX() - r, cuerpo.getY() - r);  // el sprite sigue al cuerpo
+    sprite->setPos(cuerpo.getX() - r, cuerpo.getY() - r);
 }
 
 double Proyectil::rapidezImpacto() const {

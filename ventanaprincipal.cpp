@@ -13,10 +13,8 @@ VentanaPrincipal::VentanaPrincipal(QWidget* padre) : QMainWindow(padre) {
 
     vista = new QGraphicsView(this);
     vista->setScene(juego->getEscena());
-    // La escena esta en "unidades de fisica" (100x60), no en pixeles: sin
-    // escalar la vista se ve minuscula. 8x la deja en ~800x480 px.
     vista->scale(8, 8);
-    vista->setMinimumSize(850, 560);
+    vista->setMinimumSize(1230, 760);
 
     QDoubleSpinBox* spinAngulo = new QDoubleSpinBox(this);
     spinAngulo->setRange(0.0, 180.0);
@@ -44,11 +42,8 @@ VentanaPrincipal::VentanaPrincipal(QWidget* padre) : QMainWindow(padre) {
     contenedor->setLayout(principal);
     setCentralWidget(contenedor);
     setWindowTitle(QString("Practica 5 - Actividad 2"));
-    resize(900, 650);
+    resize(1280, 850);
 
-    // El boton arma los dos valores y llama a onDisparar (que a su vez le
-    // pasa el disparo a Juego). Se usa una lambda para leer los spin boxes
-    // en el momento del clic.
     QObject::connect(botonDisparar, &QPushButton::clicked, this, [this, spinAngulo, spinVelocidad]() {
         onDisparar(spinAngulo->value(), spinVelocidad->value());
     });
@@ -58,8 +53,6 @@ VentanaPrincipal::VentanaPrincipal(QWidget* padre) : QMainWindow(padre) {
 }
 
 VentanaPrincipal::~VentanaPrincipal() {
-    // 'juego' y 'vista' tienen a 'this' como padre QObject/QWidget: Qt los
-    // destruye solo. No hace falta delete explicito.
 }
 
 void VentanaPrincipal::onDisparar(double angulo, double velocidad) {
@@ -75,4 +68,14 @@ void VentanaPrincipal::onTurnoCambiado(int indiceJugadorActivo) {
 void VentanaPrincipal::onJuegoTerminado(const std::string& nombreGanador) {
     QMessageBox::information(this, QString("Fin del juego"),
                              QString((nombreGanador + " gano!").c_str()));
+
+    QMessageBox::StandardButton respuesta = QMessageBox::question(
+        this, QString("Jugar de nuevo"), QString("¿Quieres jugar de nuevo?"),
+        QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+
+    if (respuesta == QMessageBox::Yes) {
+        juego->iniciar();  // reinicia todo: jugadores, bunkers y obstaculos
+        // (con una nueva distribucion aleatoria)
+        setWindowTitle(QString("Practica 5 - Actividad 2"));
+    }
 }

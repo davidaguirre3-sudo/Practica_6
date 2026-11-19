@@ -2,10 +2,10 @@
 
 Jugador::Jugador(const std::string& nombre_, double xBase, double yBase, double anguloInicial)
     : nombre(nombre_) {
-    canon = new Canon(xBase, yBase, anguloInicial);
-    // El color del sprite lo deduzco del nombre ("Jugador 1"/"Jugador 2")
-    // para no tener que agregarle un parametro a ESTE constructor, que si
-    // es del contrato real que usa Juego.cpp.
+    // El canon dispara desde la altura del pecho del Representante (no
+    // desde el piso): el Representante mide 20 de alto y su base (pies)
+    // queda en yBase-5, asi que el pecho queda ~15 mas arriba que yBase.
+    canon = new Canon(xBase, yBase - 15, anguloInicial);
     bool esJugador1 = nombre_.find('1') != std::string::npos;
     representante = new Representante(xBase, yBase - 5, esJugador1);
 }
