@@ -1,1 +1,11 @@
-<RCC/>
+<RCC>
+    <qresource prefix="/sprites">
+        <file alias="representante_azul.png">recursos/representante_azul.png</file>
+        <file alias="representante_rojo.png">recursos/representante_rojo.png</file>
+        <file alias="estructura.png">recursos/estructura.png</file>
+        <file alias="caja_madera.png">recursos/caja_madera.png</file>
+        <file alias="proyectil.png">recursos/proyectil.png</file>
+        <file alias="explosion.png">recursos/explosion.png</file>
+        <file alias="fondo.png">recursos/fondo.png</file>
+    </qresource>
+</RCC>

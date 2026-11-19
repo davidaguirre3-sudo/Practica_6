@@ -8,17 +8,31 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
     juego.cpp\
-    ventanaprincipal.cpp
+    ventanaprincipal.cpp\
+    jugador.cpp\
+    caja.cpp\
+    canon.cpp\
+    colisiones.cpp\
+    estructura.cpp\
+    obstaculo.cpp\
+    particula.cpp\
+    proyectil.cpp\
+    representante.cpp
+
 
 HEADERS += \
-    mainwindow.h\
     juego.h\
-    ventanaprincipal.h
-
-FORMS += \
-    mainwindow.ui
+    ventanaprincipal.h\
+    jugador.h\
+    caja.h\
+    canon.h\
+    colisiones.h\
+    estructura.h\
+    obstaculo.h\
+    particula.h\
+    proyectil.h\
+    representante.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

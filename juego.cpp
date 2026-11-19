@@ -2,12 +2,14 @@
 #include "colisiones.h"
 #include <cmath>
 
-const double DT = 0.02;
-const int INTERVALO_TIMER_MS = 20;
-const double UMBRAL_DETENCION = 0.05;
-const double TIEMPO_MAXIMO_VUELO = 8.0;
-const int REBOTES_MAXIMOS = 25;
-const double CONSTANTE_DANO = 1.0;
+// --- constantes del juego (no estan en el diagrama simplificado, igual
+// que las constantes de Actividad 1 no se mostraban como clase aparte) ---
+const double DT = 0.02;                 // paso de tiempo de cada "tick" del timer
+const int INTERVALO_TIMER_MS = 20;      // 1000*DT
+const double UMBRAL_DETENCION = 0.05;   // rapidez por debajo de la cual el proyectil "se detuvo"
+const double TIEMPO_MAXIMO_VUELO = 8.0; // segundos: red de seguridad
+const int REBOTES_MAXIMOS = 25;         // red de seguridad
+const double CONSTANTE_DANO = 1.0;      // danio = CONSTANTE_DANO * masa * rapidezImpacto
 
 Juego::Juego(QObject* padre)
     : QObject(padre), caja(100, 60), turno(0), estado(ESTADO_ESPERANDO_DISPARO), e(0.7) {
@@ -20,6 +22,12 @@ Juego::Juego(QObject* padre)
 
     escena = new QGraphicsScene(this);
     escena->setSceneRect(0, 0, caja.getAncho(), caja.getAlto());
+
+    // Fondo: una sola imagen que cubre toda la caja, detras de todo lo demas.
+    auto* fondo = escena->addPixmap(
+        QPixmap(":/sprites/fondo.png").scaled((int)caja.getAncho(), (int)caja.getAlto(),
+                                              Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    fondo->setZValue(-100);
 
     timer = new QTimer(this);
     timer->setInterval(INTERVALO_TIMER_MS);
@@ -43,7 +51,8 @@ Juego::~Juego() {
         delete jugador2;
     }
     delete escena;
-
+    // 'timer' tiene a 'this' como padre QObject: en Qt real, Qt lo destruye
+    // solo cuando se destruye 'this'. No se borra explicitamente aqui.
 }
 
 void Juego::iniciar() {
@@ -55,10 +64,14 @@ void Juego::iniciar() {
     jugador1 = new Jugador("Jugador 1", 10, alto - 5, 45);
     jugador2 = new Jugador("Jugador 2", ancho - 10, alto - 5, 135);
 
-    jugador1->agregarEstructura(new Estructura(Obstaculo(5, 10, 8, 8), 10));
-    jugador1->agregarEstructura(new Estructura(Obstaculo(22, 5, 8, 8), 10));
-    jugador2->agregarEstructura(new Estructura(Obstaculo(ancho - 13, 10, 8, 8), 10));
-    jugador2->agregarEstructura(new Estructura(Obstaculo(ancho - 30, 5, 8, 8), 10));
+    // Las estructuras quedan a ras de piso (mismo nivel que los
+    // representantes, que estan en y = alto-5) y pegadas a cada jugador,
+    // como un muro que lo protege de los disparos del rival.
+    double yPiso = alto - 5 - 8;  // el bloque de 8x8 queda con su base en el piso
+    jugador1->agregarEstructura(new Estructura(Obstaculo(16, yPiso, 8, 8), 10));
+    jugador1->agregarEstructura(new Estructura(Obstaculo(28, yPiso, 8, 8), 10));
+    jugador2->agregarEstructura(new Estructura(Obstaculo(ancho - 24, yPiso, 8, 8), 10));
+    jugador2->agregarEstructura(new Estructura(Obstaculo(ancho - 36, yPiso, 8, 8), 10));
 
     escena->addItem(jugador1->getRepresentante());
     escena->addItem(jugador2->getRepresentante());
@@ -79,7 +92,7 @@ const Jugador* Juego::getGanador() const {
 }
 
 void Juego::disparar(double angulo, double velocidad) {
-    if (estado != ESTADO_ESPERANDO_DISPARO) return;
+    if (estado != ESTADO_ESPERANDO_DISPARO) return;  // ya hay un disparo en curso, o el juego termino
 
     Jugador* activo = getJugadorActivo();
     jugadorQueDisparo = activo;
@@ -112,6 +125,9 @@ void Juego::actualizar() {
     }
 }
 
+// Aplica la fisica de choques de la Actividad 1 (de Pedro) al proyectil en
+// vuelo. Devuelve true si hubo un impacto directo contra un Representante
+// (eso termina el turno de inmediato, sin importar la rapidez).
 bool Juego::resolverColisionesProyectil() {
     Particula& cuerpo = proyectil->getCuerpo();
 
@@ -121,7 +137,8 @@ bool Juego::resolverColisionesProyectil() {
 
     Jugador* jugadores[2] = {jugador1, jugador2};
     for (Jugador* j : jugadores) {
-
+        // Regla de "sin autodano": el jugador que disparo no daña su propia
+        // infraestructura ni su propio Representante con su propio proyectil.
         bool esPropio = (j == jugadorQueDisparo);
 
         for (Estructura* est : j->getInfraestructura()) {
@@ -154,6 +171,7 @@ bool Juego::resolverColisionesProyectil() {
 void Juego::terminarVueloProyectil() {
     timer->stop();
     if (proyectil) {
+        mostrarExplosion(proyectil->getCuerpo().getX(), proyectil->getCuerpo().getY());
         escena->removeItem(proyectil);
         delete proyectil;
         proyectil = nullptr;
@@ -164,6 +182,20 @@ void Juego::terminarVueloProyectil() {
     } else {
         cambiarTurno();
     }
+}
+
+// Efecto visual: una explosion que aparece donde termino el disparo y se
+// quita sola a los 300ms. No afecta la logica (daño/colisiones ya se
+// resolvieron antes de llamar a esto).
+void Juego::mostrarExplosion(double x, double y) {
+    auto* fx = escena->addPixmap(
+        QPixmap(":/sprites/explosion.png").scaled(12, 12, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    fx->setPos(x - 6, y - 6);
+    fx->setZValue(50);
+    QTimer::singleShot(300, this, [this, fx]() {
+        escena->removeItem(fx);
+        delete fx;
+    });
 }
 
 bool Juego::verificarVictoria() {
