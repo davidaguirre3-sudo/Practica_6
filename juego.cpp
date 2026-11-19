@@ -3,8 +3,6 @@
 #include <cmath>
 #include <cstdlib>
 
-// --- constantes del juego (no estan en el diagrama simplificado, igual
-// que las constantes de Actividad 1 no se mostraban como clase aparte) ---
 const double DT = 0.02;
 const int INTERVALO_TIMER_MS = 20;
 const double UMBRAL_DETENCION = 0.05;
@@ -27,7 +25,7 @@ Juego::Juego(QObject* padre)
     const double ESCALA_VISTA = 8.0;
     auto* fondo = escena->addPixmap(
         QPixmap(":/sprites/fondo.png").scaled((int)(caja.getAncho() * ESCALA_VISTA), (int)(caja.getAlto() * ESCALA_VISTA),
-                                              Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+                                               Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
     fondo->setScale(1.0 / ESCALA_VISTA);
     fondo->setZValue(-100);
 
@@ -60,7 +58,6 @@ Juego::~Juego() {
 }
 
 void Juego::iniciar() {
-
     if (proyectil) {
         escena->removeItem(proyectil);
         delete proyectil;
@@ -119,23 +116,22 @@ void Juego::iniciar() {
     crearBunker(jugador2, X_JUGADOR2, alto - 5);
 
     const double ANCHO_OBSTACULO = 6, ALTO_OBSTACULO = 10, RES_OBSTACULO = 60;
-    const double MARGEN_EXTREMOS = 0.12;  // fraccion reservada cerca de cada bunker
+    const double MARGEN_EXTREMOS = 0.12;
     const int NUM_OBSTACULOS = 4;
     const double anchoFranja = (1.0 - 2 * MARGEN_EXTREMOS) / NUM_OBSTACULOS;
     for (int i = 0; i < NUM_OBSTACULOS; i++) {
         double inicioFranja = MARGEN_EXTREMOS + anchoFranja * i;
-        double azarX = static_cast<double>(std::rand()) / RAND_MAX;  // [0,1)
+        double azarX = static_cast<double>(std::rand()) / RAND_MAX;
         double fracX = inicioFranja + azarX * anchoFranja;
         double xCentro = X_JUGADOR1 + DISTANCIA_ENTRE_JUGADORES * fracX;
 
-        double azarAltura = static_cast<double>(std::rand()) / RAND_MAX;  // [0,1)
+        double azarAltura = static_cast<double>(std::rand()) / RAND_MAX;
         double desdePiso = 35.0 + azarAltura * (80.0 - 35.0);
         double yArriba = alto - desdePiso;
 
         obstaculosNeutrales.push_back(new Estructura(
             Obstaculo(xCentro - ANCHO_OBSTACULO / 2, yArriba, ANCHO_OBSTACULO, ALTO_OBSTACULO),
             RES_OBSTACULO));
-
     }
 
     escena->addItem(jugador1->getRepresentante());
@@ -146,7 +142,9 @@ void Juego::iniciar() {
 }
 
 QGraphicsScene* Juego::getEscena() { return escena; }
+
 Jugador* Juego::getJugadorActivo() { return turno == 0 ? jugador1 : jugador2; }
+
 bool Juego::estaTerminado() const { return estado == ESTADO_TERMINADO; }
 
 const Jugador* Juego::getGanador() const {
@@ -256,7 +254,7 @@ void Juego::mostrarExplosion(double x, double y) {
     const double TAM = 12;
     auto* fx = escena->addPixmap(
         QPixmap(":/sprites/explosion.png").scaled((int)(TAM * ESCALA_VISTA), (int)(TAM * ESCALA_VISTA),
-                                                  Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                                                    Qt::KeepAspectRatio, Qt::SmoothTransformation));
     fx->setScale(1.0 / ESCALA_VISTA);
     fx->setPos(x - TAM / 2, y - TAM / 2);
     fx->setZValue(50);

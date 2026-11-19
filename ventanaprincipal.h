@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QGraphicsView>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 #include "juego.h"
 
 class VentanaPrincipal : public QMainWindow {
@@ -11,6 +13,8 @@ class VentanaPrincipal : public QMainWindow {
 private:
     QGraphicsView* vista;
     Juego* juego;
+    QMediaPlayer* musica;
+    QAudioOutput* salidaAudio;
 
 public:
     VentanaPrincipal(QWidget* padre = nullptr);

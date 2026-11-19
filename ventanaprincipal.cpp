@@ -50,6 +50,14 @@ VentanaPrincipal::VentanaPrincipal(QWidget* padre) : QMainWindow(padre) {
 
     QObject::connect(juego, &Juego::turnoCambiado, this, &VentanaPrincipal::onTurnoCambiado);
     QObject::connect(juego, &Juego::juegoTerminado, this, &VentanaPrincipal::onJuegoTerminado);
+
+    musica = new QMediaPlayer(this);
+    salidaAudio = new QAudioOutput(this);
+    musica->setAudioOutput(salidaAudio);
+    musica->setSource(QUrl("qrc:/audio/musica.mp3"));
+    musica->setLoops(QMediaPlayer::Infinite);
+    salidaAudio->setVolume(0.5);
+    musica->play();
 }
 
 VentanaPrincipal::~VentanaPrincipal() {
@@ -61,21 +69,20 @@ void VentanaPrincipal::onDisparar(double angulo, double velocidad) {
 
 void VentanaPrincipal::onTurnoCambiado(int indiceJugadorActivo) {
     setWindowTitle(QString(indiceJugadorActivo == 0
-                               ? "Practica 5 - turno: Jugador 1"
-                               : "Practica 5 - turno: Jugador 2"));
+                                ? "Practica 5 - turno: Jugador 1"
+                                : "Practica 5 - turno: Jugador 2"));
 }
 
 void VentanaPrincipal::onJuegoTerminado(const std::string& nombreGanador) {
     QMessageBox::information(this, QString("Fin del juego"),
-                             QString((nombreGanador + " gano!").c_str()));
+                              QString((nombreGanador + " gano!").c_str()));
 
     QMessageBox::StandardButton respuesta = QMessageBox::question(
         this, QString("Jugar de nuevo"), QString("¿Quieres jugar de nuevo?"),
         QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
 
     if (respuesta == QMessageBox::Yes) {
-        juego->iniciar();  // reinicia todo: jugadores, bunkers y obstaculos
-        // (con una nueva distribucion aleatoria)
+        juego->iniciar();
         setWindowTitle(QString("Practica 5 - Actividad 2"));
     }
 }

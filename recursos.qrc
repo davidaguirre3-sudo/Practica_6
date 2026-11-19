@@ -8,4 +8,7 @@
         <file alias="explosion.png">recursos/explosion.png</file>
         <file alias="fondo.png">recursos/fondo.png</file>
     </qresource>
+    <qresource prefix="/audio">
+        <file alias="musica.mp3">recursos/musica.mp3</file>
+    </qresource>
 </RCC>

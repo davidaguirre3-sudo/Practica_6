@@ -1,4 +1,5 @@
 QT += widgets
+QT += multimedia
 
 CONFIG += c++17
 
@@ -41,3 +42,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     recursos.qrc
+
